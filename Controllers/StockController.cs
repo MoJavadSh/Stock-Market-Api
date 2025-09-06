@@ -16,7 +16,7 @@ namespace api.Controllers
     {
         private readonly ApplicationDBContext _context;
         public StockController(ApplicationDBContext context)
-        { 
+        {
             _context = context;
         }
         [HttpGet]
@@ -24,7 +24,7 @@ namespace api.Controllers
         {
             var stocks = _context.Stocks.ToList()
                 .Select(s => s.ToStockDto());
-            
+
             return Ok(stocks);
         }
 
@@ -42,9 +42,11 @@ namespace api.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateStockRequestDto StockDto)
         {
-            var stockModel = StockDto.ToStockFromCreateDTO();
+            var stockModel = StockDto.ToStockFromCreateDto();
+
             _context.Stocks.Add(stockModel);
             _context.SaveChanges();
+
             return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
         }
 

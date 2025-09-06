@@ -18,7 +18,7 @@ public static class StockMappers
             MarketCap = stockModel.MarketCap
         };
     }
-    public static Stock ToStockFromCreateDTO(this CreateStockRequestDto stockDto)
+    public static Stock ToStockFromCreateDto(this CreateStockRequestDto stockDto)
     {
         return new Stock
         {
