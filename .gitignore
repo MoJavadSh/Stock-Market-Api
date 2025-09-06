@@ -1,0 +1,24 @@
+# Build folders
+bin/
+obj/
+
+# JetBrains Rider
+.idea/
+*.DotSettings.user
+
+# Visual Studio leftovers
+.vs/
+*.user
+*.suo
+*.rsuser
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets and configs
+*.env
+appsettings.*.local.json
