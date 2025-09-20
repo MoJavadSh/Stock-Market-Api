@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Stock;
+using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -16,42 +17,44 @@ namespace api.Controllers
     public class StockController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
+        private readonly IStockRepository _stockRepo;
 
-        public StockController(ApplicationDBContext context)
+        public StockController(ApplicationDBContext context,  IStockRepository stockRepo)
         {
             _context = context;
+            _stockRepo = stockRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var stocks = (await _context.Stocks.ToListAsync())
+            var stocks = (await _stockRepo.GetAllAsync())
                 .Select(s => s.ToStockDto());
 
             return Ok(stocks);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAllCommentByStockId([FromRoute] int id)
-        {
-            var listofComments = (await _context.Comments
-                .Where(p => p.StockId == id)
-                .ToListAsync());
-            var dto = new List<GetAllCommentByStockIdDTO>();
-
-            dto = listofComments.Select(p => new GetAllCommentByStockIdDTO()
-            {
-                Content = p.Content,
-                Title = p.Title
-            }).ToList();
-            
-            // var stocks = await _context.Comments
-            //     .Where(p => p.StockId == id)
-            //     .Select(p => new { p.Content, p.Title })
-            //     .ToListAsync();
-
-            return Ok(dto);
-        }
+        // [HttpGet("{id}")]
+        // public async Task<IActionResult> GetAllCommentByStockId([FromRoute] int id)
+        // {
+        //     var listofComments = (await _context.Comments
+        //         .Where(p => p.StockId == id)
+        //         .ToListAsync());
+        //     var dto = new List<GetAllCommentByStockIdDTO>();
+        //
+        //     dto = listofComments.Select(p => new GetAllCommentByStockIdDTO()
+        //     {
+        //         Content = p.Content,
+        //         Title = p.Title
+        //     }).ToList();
+        //     
+        //     // var stocks = await _context.Comments
+        //     //     .Where(p => p.StockId == id)
+        //     //     .Select(p => new { p.Content, p.Title })
+        //     //     .ToListAsync();
+        //
+        //     return Ok(dto);
+        // }
 
 
         [HttpGet("{id}")]
