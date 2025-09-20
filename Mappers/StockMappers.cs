@@ -20,9 +20,14 @@ public static class StockMappers
     }
     public static Stock ToStockFromCreateDto(this CreateStockRequestDto stockDto)
     {
+        if (stockDto.Purchase <= 0)
+        {
+            throw new ArgumentException("Purchase must be greater than zero");
+        }
+        
         return new Stock
         {
-            Symbol = stockDto.Symbol,
+            Symbol = stockDto.Symbol.ToLower(),
             CompanyName = stockDto.CompanyName,
             Purchase = stockDto.Purchase,
             LastDiv = stockDto.LastDiv,

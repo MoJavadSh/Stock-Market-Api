@@ -29,6 +29,9 @@ namespace api.Controllers
             return Ok(stocks);
         }
 
+        
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -37,18 +40,27 @@ namespace api.Controllers
                 return NotFound();
 
             return Ok(stock.ToStockDto());
-
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto StockDto)
         {
-            var stockModel = StockDto.ToStockFromCreateDto();
+            try
+            {
+                var stockModel = StockDto.ToStockFromCreateDto();
+                var duplicateStock = await _context.Stocks.AnyAsync(s => s.Symbol == stockModel.Symbol);
+                if (duplicateStock)
+                {
+                    return BadRequest();
+                }
 
-            await _context.Stocks.AddAsync(stockModel);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+                await _context.Stocks.AddAsync(stockModel);
+                return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+            }
+            catch (Exception e)
+            {
+                return ValidationProblem();
+            }
         }
 
         [HttpPut("{id}")] // Another way to write: [HttpPut] // [Route("{id}")]
@@ -59,16 +71,16 @@ namespace api.Controllers
             var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
             if (stockModel == null)
                 return NotFound();
-            
+
             stockModel.Symbol = updateDto.Symbol;
             stockModel.CompanyName = updateDto.CompanyName;
-            stockModel.Purchase =  updateDto.Purchase;
-            stockModel.LastDiv =  updateDto.LastDiv;
+
+            stockModel.LastDiv = updateDto.LastDiv;
             stockModel.Industry = updateDto.Industry;
             stockModel.MarketCap = updateDto.MarketCap;
 
             await _context.SaveChangesAsync();
-            
+
             return Ok(stockModel.ToStockDto());
         }
 
@@ -82,8 +94,5 @@ namespace api.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
-
     }
-
 }
