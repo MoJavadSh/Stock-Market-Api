@@ -12,6 +12,8 @@ namespace api.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int Id { get; set; }
+        [Required]
+        [MaxLength(50)]
         public string Symbol { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
 

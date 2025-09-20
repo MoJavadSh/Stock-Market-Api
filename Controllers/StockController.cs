@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Stock;
 using api.Mappers;
+using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,12 @@ namespace api.Controllers
     public class StockController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
+
         public StockController(ApplicationDBContext context)
         {
             _context = context;
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -30,6 +32,29 @@ namespace api.Controllers
         }
 
         [HttpGet("{id}")]
+        public async Task<IActionResult> GetAllCommentByStockId([FromRoute] int id)
+        {
+            var listofComments = (await _context.Comments
+                .Where(p => p.StockId == id)
+                .ToListAsync());
+            var dto = new List<GetAllCommentByStockIdDTO>();
+
+            dto = listofComments.Select(p => new GetAllCommentByStockIdDTO()
+            {
+                Content = p.Content,
+                Title = p.Title
+            }).ToList();
+            
+            // var stocks = await _context.Comments
+            //     .Where(p => p.StockId == id)
+            //     .Select(p => new { p.Content, p.Title })
+            //     .ToListAsync();
+
+            return Ok(dto);
+        }
+
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var stock = await _context.Stocks.FindAsync(id);
@@ -37,18 +62,27 @@ namespace api.Controllers
                 return NotFound();
 
             return Ok(stock.ToStockDto());
-
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto StockDto)
         {
-            var stockModel = StockDto.ToStockFromCreateDto();
+            try
+            {
+                var stockModel = StockDto.ToStockFromCreateDto();
+                var duplicateStock = await _context.Stocks.AnyAsync(s => s.Symbol == stockModel.Symbol);
+                if (duplicateStock)
+                {
+                    return BadRequest();
+                }
 
-            await _context.Stocks.AddAsync(stockModel);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+                await _context.Stocks.AddAsync(stockModel);
+                return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+            }
+            catch (Exception e)
+            {
+                return ValidationProblem();
+            }
         }
 
         [HttpPut("{id}")] // Another way to write: [HttpPut] // [Route("{id}")]
@@ -59,16 +93,16 @@ namespace api.Controllers
             var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
             if (stockModel == null)
                 return NotFound();
-            
+
             stockModel.Symbol = updateDto.Symbol;
             stockModel.CompanyName = updateDto.CompanyName;
-            stockModel.Purchase =  updateDto.Purchase;
-            stockModel.LastDiv =  updateDto.LastDiv;
+            stockModel.Purchase = updateDto.Purchase;
+            stockModel.LastDiv = updateDto.LastDiv;
             stockModel.Industry = updateDto.Industry;
             stockModel.MarketCap = updateDto.MarketCap;
 
             await _context.SaveChangesAsync();
-            
+
             return Ok(stockModel.ToStockDto());
         }
 
@@ -82,8 +116,5 @@ namespace api.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
-
     }
-
 }

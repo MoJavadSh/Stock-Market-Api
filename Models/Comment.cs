@@ -17,4 +17,11 @@ namespace api.Models
         public Stock? Stock { get; set; }
 
     }
+
+    public class GetAllCommentByStockIdDTO
+    {
+        public string Title { get; set; } 
+        public string Content { get; set; } 
+    }
+    
 }
