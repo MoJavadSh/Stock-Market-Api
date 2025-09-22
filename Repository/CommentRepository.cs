@@ -29,4 +29,14 @@ public class CommentRepository : ICommentRepository
         await _context.SaveChangesAsync();
         return comment;
     }
+
+    public async Task<Comment?> DeleteAsync(Guid id)
+    {
+        var comment = await _context.Comments.FindAsync(id);
+        if (comment == null)
+            return null;
+        _context.Comments.Remove(comment);
+        await _context.SaveChangesAsync();
+        return comment;
+    }
 }
