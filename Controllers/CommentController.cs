@@ -28,7 +28,7 @@ public class CommentController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetById([FromRoute] int id)
+    public async Task<ActionResult> GetById([FromRoute] Guid id)
     {
         var Comment = await _commentRepo.GetByIdAsync(id);
         if (Comment == null)
@@ -39,7 +39,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost("{stockId}")]
-    public async Task<IActionResult> Create([FromRoute] int stockId, CreateCommentDto comment)
+    public async Task<IActionResult> Create([FromRoute] Guid stockId, CreateCommentDto comment)
     {
         if (!await _stockRepo.CheckIfStockExists(stockId))
         {

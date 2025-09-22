@@ -17,7 +17,7 @@ public static class CommentMapper
         };
     }
 
-    public static Comment ToCommentFromCreate(this CreateCommentDto createDto, int stockId)
+    public static Comment ToCommentFromCreate(this CreateCommentDto createDto, Guid stockId)
     {
         return new Comment
         {

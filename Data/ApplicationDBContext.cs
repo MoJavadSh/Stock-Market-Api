@@ -19,9 +19,7 @@ namespace api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            // modelBuilder.Entity<Comment>().HasKey(P => P.Id);
+            modelBuilder.HasDefaultSchema("StockMarket");
         }
 
     }

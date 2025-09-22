@@ -58,7 +58,7 @@ namespace api.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var stock = await _stockRepo.GetStockByIdAsync(id);
             if (stock == null)
@@ -93,7 +93,7 @@ namespace api.Controllers
         
 
         [HttpPut("{id}")] // Another way to write: [HttpPut] // [Route("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateStockRequestDto updateDto)
         {
             // need a searching algorithm to find the first stock
             // check if it is existed
@@ -104,7 +104,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var stockModel = await _stockRepo.DeleteAsync(id);
             if (stockModel == null)
