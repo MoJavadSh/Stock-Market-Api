@@ -15,7 +15,8 @@ public static class StockMappers
             Purchase = stockModel.Purchase,
             LastDiv = stockModel.LastDiv,
             Industry = stockModel.Industry,
-            MarketCap = stockModel.MarketCap
+            MarketCap = stockModel.MarketCap,
+            Comments = stockModel.Comments.Select(c => c.ToCommentDto()).ToList() // in this line, select comments in comment model one by one then convert it to commentDto and it returns Enumerable and we should convert it to list to mach the variable type
         };
     }
     public static Stock ToStockFromCreateDto(this CreateStockRequestDto stockDto)
